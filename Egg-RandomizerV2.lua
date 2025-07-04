@@ -158,7 +158,7 @@ local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 screenGui.Name = "PetHatchGui"
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 240, 0, 170)
+frame.Size = UDim2.new(0, 240, 0, 190)
 frame.Position = UDim2.new(0, 20, 0, 100)
 frame.BackgroundColor3 = Color3.fromRGB(105, 80, 60)
 frame.BackgroundTransparency = 0
@@ -235,3 +235,63 @@ end)
 for _, egg in pairs(getPlayerGardenEggs(60)) do
     applyEggESP(egg, truePetMap[egg])
 end
+
+-- 🟣 Initial ESP
+for _, egg in pairs(getPlayerGardenEggs(60)) do
+    applyEggESP(egg, truePetMap[egg])
+end
+
+-- 🏷 Rename Title
+title.Text = "🐾 Pet Randomizer ✨"
+
+-- 🔁 Auto Randomize Button
+local autoBtn = Instance.new("TextButton", frame)
+autoBtn.Size = UDim2.new(1, -20, 0, 30)
+autoBtn.Position = UDim2.new(0, 10, 0, 145)
+autoBtn.BackgroundColor3 = Color3.fromRGB(80, 150, 60)
+autoBtn.Text = "🔁 Auto Randomize: OFF"
+autoBtn.TextSize = 16
+autoBtn.Font = Enum.Font.FredokaOne
+autoBtn.TextColor3 = Color3.new(1, 1, 1)
+
+-- Best Pets to stop auto on
+local bestPets = {
+    ["Raccoon"] = true, ["Dragonfly"] = true, ["Queen Bee"] = true,
+    ["Disco Bee"] = true, ["Fennec Fox"] = true, ["Fox"] = true,
+    ["Mimic Octopus"] = true
+}
+
+local autoRunning = false
+
+autoBtn.MouseButton1Click:Connect(function()
+    autoRunning = not autoRunning
+    autoBtn.Text = autoRunning and "🔁 Auto Randomize: ON" or "🔁 Auto Randomize: OFF"
+
+    coroutine.wrap(function()
+        while autoRunning do
+            countdownAndRandomize(randomizeBtn)
+
+            -- Stop if any best pet is rolled
+            for _, petName in pairs(truePetMap) do
+                if bestPets[petName] then
+                    autoRunning = false
+                    autoBtn.Text = "🔁 Auto Randomize: OFF"
+                    return
+                end
+            end
+
+            wait(1)
+        end
+    end)()
+end)
+
+
+-- 🧾 Credit under title
+local credit = Instance.new("TextLabel", frame)
+credit.Size = UDim2.new(1, 0, 0, 20)
+credit.Position = UDim2.new(0, 0, 0, 22)
+credit.BackgroundTransparency = 1
+credit.Text = "Made by - munkizzz"
+credit.Font = Enum.Font.FredokaOne
+credit.TextSize = 14
+credit.TextColor3 = Color3.fromRGB(200, 200, 200)
